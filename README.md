@@ -9,7 +9,7 @@ typdf is a PHP library for filling forms in PDF documents.
   - radio buttons
   - checkboxes
   - selects
-- Can show all avaible fields in the document
+- Can show all available fields in the document
 - Can save the PDF as file or return the binary content
 - Supports PDFs with Flate-encoded streams
 
