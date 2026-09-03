@@ -130,7 +130,10 @@ class ObjectSerializer
     {
         $entries = '';
         foreach ($dict->getEntries() as $key => $value) {
-            $entries .= "\n/" . $this->escapeName($key) . ' ' . $this->serialize($value);
+            // PHP casts purely-numeric string array keys (e.g. a PDF name
+            // like "/4") to int, so a numeric dictionary key can arrive here
+            // as an int rather than a string.
+            $entries .= "\n/" . $this->escapeName((string) $key) . ' ' . $this->serialize($value);
         }
 
         return '<<' . $entries . "\n>>";

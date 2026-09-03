@@ -385,15 +385,14 @@ class PdfDocument
 
     private function applyCheckbox(FormField $field, bool $checked): void
     {
-        // $onState = $field->onStates[0] ?? 'Yes';
-        // It seems that only "Yes" selects the checkbox correctly, even if the actual value is different
-        $onState = 'Yes';
+        // The on-state name MUST match a key already present in the widget's
+        // /AP appearance subdictionary (e.g. "Yes", "1", ...)
+        $onState = $field->onStates[0] ?? 'Yes';
         $state   = $checked ? $onState : 'Off';
 
         $dict = $this->loadForModification($field->objectNumber);
         $dict->set('V', new PdfName($state));
         $dict->set('AS', new PdfName($state));
-        $dict->remove('AP');
     }
 
     private function applyRadio(FormField $field, string $value): void
@@ -412,13 +411,13 @@ class PdfDocument
         $groupDict = $this->loadForModification($field->objectNumber);
         $groupDict->set('V', new PdfName($value));
 
-        // Update each child widget's /AS
+        // Update each child widget's /AS. As with checkboxes, the state name
+        // must match a key already present in that widget's own /AP
+        // subdictionary, so /AP is left untouched.
         foreach ($field->widgetObjectNumbers as $idx => $widgetObjNum) {
             $widgetDict  = $this->loadForModification($widgetObjNum);
-            // It seems that only "Yes" instead of $field->onStates[$idx] selects the radio correctly
-            $asStateName = ($idx === $selectedIdx) ? 'Yes' : 'Off';
+            $asStateName = ($idx === $selectedIdx) ? $value : 'Off';
             $widgetDict->set('AS', new PdfName($asStateName));
-            $widgetDict->remove('AP');
         }
     }
 
